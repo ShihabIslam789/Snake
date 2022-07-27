@@ -8,14 +8,29 @@ class cube(object):
     rows = 0
     w = 0
     def __init__(self,start,dirnx=1,dirny=0,color=(255,0,0)):
-        pass
+        self.pos = start
+        self.dirnx = 1
+        self.dirny = 0
+        self.color - color
         
     def move(self, dirnx, dirny):
-        pass
+        self.dirnx = dirnx
+        self.dirny = dirny
+        self.pos = (self.pos[0] + self.dirnx, self.pos[1] + self.dirny)
     
     def draw(self, surface, eyes=False):
-        pass
-        
+        dis = self.w // self.rows
+        i = self.pos[0]
+        j= self.pos[1]
+
+        pygame.draw.rect(surface, self.color, (i*dis+1,j*dis+1,dis-2,dis-2))
+        if eyes:
+            center = dis//2
+            radius = 3
+            circleMiddle = (i*dis+center-radius,j*dis+8)
+            circleMiddle2 = (i*dis + dis - radius*2, j*dis+8)
+            pygame.draw.circle(surface, (0,0,0), circleMiddle, radius)
+            pygame.draw.circle(surface, (0,0,0), circleMiddle2, radius)   
 
 class snake(object):
     body = []
@@ -64,6 +79,7 @@ class snake(object):
             elif c.dirny == 1 and c.pos[1] >= c.rows-1: c.pos = (c.pos[0], 0)
             elif c.dirny == -1 and c.pos[1] <= 0: c.pos = (c.pos[0],c.rows-1)
             else: c.move(c.dirnx,c.dirny)
+    
     def reset(self, pos):
         pass
 
@@ -72,7 +88,11 @@ class snake(object):
         
 
     def draw(self, surface):
-        pass
+        for i,c in enumerate(self.body):
+            if  i ==0:
+                c.draw(surface,True)
+            else:
+                c.draw(surface)
 
 
 def drawGrid(w, rows, surface):
@@ -97,30 +117,37 @@ def redrawWindow(surface):
 
 
 def randomSnack(rows, item):
-    pass
+    positions = item.body
 
+    while true:
+        x = random.randrange(rows)
+        y = random.randrange(rows)
+        if len(list(filter(lambda z:z.pos==(x,y), (positions))))  > 0:
+            continue
+        else:
+            break
+    return (x,y)
 
 def message_box(subject, content):
     pass
 
 
+
 def main():
-    global width, rows, s
-    width = 500  # Width of our screen
-    height = 500  # Height of our screen
-    rows = 20  # Amount of rows
-
-    win = pygame.display.set_mode((width, height))  # Creates our screen object
-
-    s = snake((255,0,0), (10,10))  # Creates a snake object which we will code later
-  
-    clock = pygame.time.Clock() # creating a clock object
-
+    global s, snack, win
+    win = pygame.display.set_mode((width,height))
+    s = snake((255,0,0), (10,10))
+    s.addCube()
+    snack = cube(randomSnack(rows,s), color=(0,255,0))
     flag = True
-    # STARTING MAIN LOOP
+    clock = pygame.time.Clock()
+    
     while flag:
-        pygame.time.delay(50)  # This will delay the game so it doesn't run too quickly
-        clock.tick(10)  # Will ensure our game runs at 10 FPS
-        redrawWindow(win)  # This will refresh our screen  
+        pygame.time.delay(50)
+        clock.tick(10)
+        s.move()
+        redrawWindow(win)
 
 
+
+     pass
