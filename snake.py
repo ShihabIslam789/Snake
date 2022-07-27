@@ -33,6 +33,8 @@ class cube():
         j = self.pos[1]
         
         pygame.draw.rect(surface, self.color, (i*dis+1,j*dis+1,dis-2,dis-2))
+        # BY multiyping row and column value by our cubes width and height of each cube we can
+        # determine where to draw
         if eyes:
             centre = dis//2
             radius = 3
@@ -50,18 +52,19 @@ class snake():
     def __init__(self, color, pos):
         #pos is given as coordinates on the grid ex (1,5)
         self.color = color
-        self.head = cube(pos)
-        self.body.append(self.head)
+        self.head = cube(pos) #head will be front of snake
+        self.body.append(self.head) #add head which is a cube
+        #below are directions of snake movement
         self.dirnx = 0
         self.dirny = 1
     
     def move(self):
         for event in pygame.event.get():
-            if event.type == pygame.QUIT:
+            if event.type == pygame.QUIT: #checks if user presses the 'x' button
                 pygame.quit()
-            keys = pygame.key.get_pressed()
+            keys = pygame.key.get_pressed() # see which keys are pressed
 
-            for key in keys:
+            for key in keys: #loop through all keys
                 if keys[pygame.K_LEFT]:
                     self.dirnx = -1
                     self.dirny = 0
@@ -79,15 +82,15 @@ class snake():
                     self.dirnx = 0
                     self.turns[self.head.pos[:]] = [self.dirnx,self.dirny]
         
-        for i, c in enumerate(self.body):
-            p = c.pos[:]
-            if p in self.turns:
-                turn = self.turns[p]
-                c.move(turn[0], turn[1])
-                if i == len(self.body)-1:
+        for i, c in enumerate(self.body): #loop through every cube in body
+            p = c.pos[:]    # This stores cubes position on the grid
+            if p in self.turns: #If cubes current position is one where we turned
+                turn = self.turns[p] #Get the direction we should turn
+                c.move(turn[0], turn[1]) #move our cube in that direction
+                if i == len(self.body)-1:#If last cube, remove from dictionary
                     self.turns.pop(p)
             else:
-                c.move(c.dirnx,c.dirny)
+                c.move(c.dirnx,c.dirny) #otherwise move in headed direction
         
         
     def reset(self,pos):
@@ -101,7 +104,9 @@ class snake():
     def addCube(self):
         tail = self.body[-1]
         dx, dy = tail.dirnx, tail.dirny
-
+        # We need to know which side of the snake to add the cube to.
+        # SO we check what direction we are moving in to determine if we need
+        # to add the cube to the left,right, above or below
         if dx == 1 and dy == 0:
             self.body.append(cube((tail.pos[0]-1,tail.pos[1])))
         elif dx == -1 and dy == 0:
@@ -135,10 +140,10 @@ def redrawWindow():
 
 
 def drawGrid(w, rows, surface):
-    sizeBtwn = w // rows
+    sizeBtwn = w // rows #Distance between Lines
 
-    x = 0
-    y = 0
+    x = 0 # keep track of x
+    y = 0 #keep track of y
     for l in range(rows):
         x = x + sizeBtwn
         y = y +sizeBtwn
@@ -149,12 +154,13 @@ def drawGrid(w, rows, surface):
 
 
 def randomSnack(rows, item):
-    positions = item.body
+    positions = item.body #Get all positions of our cubes
 
-    while True:
+    while True: #keep generating random positions until we get a valid one
         x = random.randrange(1,rows-1)
         y = random.randrange(1,rows-1)
         if len(list(filter(lambda z:z.pos == (x,y), positions))) > 0:
+            # This checks if the position we generated is occupied by the snake
                continue
         else:
                break
@@ -162,6 +168,7 @@ def randomSnack(rows, item):
     return (x,y)
 
 def message_box(subject, content):
+    #using tkinder for out of game msgs
     root = tk.Tk()
     root.attributes("-topmost", True)
     root.withdraw()
@@ -170,7 +177,7 @@ def message_box(subject, content):
         root.destroy()
     except:
         pass
-    
+
 def main():
     global s, snack, win
     win = pygame.display.set_mode((width,height))
@@ -195,6 +202,7 @@ def main():
             
         for x in range(len(s.body)):
             if s.body[x].pos in list(map(lambda z:z.pos,s.body[x+1:])):
+                #check if body overlaps from y position
                 print("Score:", len(s.body))
                 message_box("You Lost!","Try Again!")
                 s.reset((10,10))
