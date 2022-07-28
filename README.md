@@ -1,6 +1,6 @@
 # Snake
 A game of Snake uses the pygame library for the player to take control of the snake <br>
-and eat the snakcs placed around to grow as big possible before they lose. <br>
+and eat the snacks placed around to grow as big possible before they lose. <br>
 
 ## Getting Started
 
